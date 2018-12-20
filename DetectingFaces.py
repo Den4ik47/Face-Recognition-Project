@@ -1,34 +1,19 @@
-# This is a _very simple_ example of a web service that recognizes faces in uploaded images.
-# Upload an image file and it will check if the image contains a picture of Barack Obama.
-# The result is returned as json. For example:
-#
-# $ curl -XPOST -F "file=@obama2.jpg" http://127.0.0.1:5001
-#
-# Returns:
-#
-# {
-#  "face_found_in_image": true,
-#  "is_picture_of_obama": true
-# }
-#
-# This example is based on the Flask file upload example: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
-
-# NOTE: This example requires flask to be installed! You can install it with pip:
-# $ pip3 install flask
-
+import os
 import face_recognition
-from flask import Flask, jsonify, request, redirect
+from flask import Flask, jsonify, request, redirect,send_file,render_template
 from pymongo import MongoClient
 # You can change this to any folder on your system
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
 client = MongoClient('localhost', 27017)
 db = client['Users']
 collection = db['Data']
 
-
-app = Flask(__name__)
-
-
+UPLOAD_FOLDER = '/home/deni/Documents/Diploma/UPLOAD_FOLDER'
+TEMPLATE='/home/deni/Documents/Diploma/templates'
+app = Flask(__name__,template_folder='templates')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['TEMPLATE'] = TEMPLATE
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -53,8 +38,8 @@ def upload_image():
     # If no valid image file was uploaded, show the file upload form:
     return '''
     <!doctype html>
-    <title>Is this a picture of Obama?</title>
-    <h1>Upload a picture and see if it's a picture of Obama!</h1>
+    <title>Detect faces on similar photos</title>
+    <h1>Upload a picture and see result!</h1>
     <form method="POST" enctype="multipart/form-data">
       <input type="file" name="file">
       <input type="submit" value="Upload">
@@ -63,7 +48,7 @@ def upload_image():
 
 
 def detect_faces_in_image(file_stream):
-
+    file_stream.save(os.path.join(app.config['UPLOAD_FOLDER'], file_stream.filename))
     # Load the uploaded image file
     img = face_recognition.load_image_file(file_stream)
     # Get face encodings for any faces in the uploaded image
@@ -73,17 +58,15 @@ def detect_faces_in_image(file_stream):
     is_obama = False
     listForImages=[]
     values=collection.distinct("value")
-    images=collection.distinct("Images")
-    if len(unknown_face_encodings) > 0:
+    if values: 
+      if len(unknown_face_encodings) > 0:
         for unknown in range(len(unknown_face_encodings)):
-           if values: 
-            for faces in range(len(values)):
               res=collection.find_one(({"value": str(unknown_face_encodings[unknown])}))
-              print(res)
               if res:
                  print(res['Images'])
               else:
-                 collection.insert({"value":str(unknown_face_encodings[unknown]),"Name and Surname":"","Images":file_stream.filename})
+                collection.insert({"value":str(unknown_face_encodings[unknown]),"Name and Surname":"","Images":file_stream.filename})
+                for faces in range(len(values)):
         # See if the first face in the uploaded image matches the known face of Obama
                  helplist=[]
                  pureList=[]
@@ -93,20 +76,33 @@ def detect_faces_in_image(file_stream):
                  helplist=result.split(' ')
                  for point in range(len(helplist)):
                      if helplist[point] is not '':
-                        pureList.append(float(helplist[point]))
-                 print(pureList)       
+                        pureList.append(float(helplist[point])) 
                  match_results = face_recognition.compare_faces([pureList], unknown_face_encodings[unknown])
                  if match_results[0]:
+                    record=collection.find_one({"value":values[faces]})
+                    print(record['Images'])
+                    if file_stream.filename not in listForImages:
+                       listForImages.append(file_stream.filename)
+                    if record not in listForImages:
+                        listForImages.append(record['Images'])
+                    print(listForImages)
                     is_obama = True
                     face_found = True
-           else:                 
-               collection.insert({"value":str(unknown_face_encodings[unknown]),"Name and Surname":"","Images":file_stream.filename})
+    else:
+        for unknown in range(len(unknown_face_encodings)):                 
+            collection.insert({"value":str(unknown_face_encodings[unknown]),"Name and Surname":"","Images":file_stream.filename})                
     # Return the result as json
     result = {
         "face_found_in_image": face_found,
-        "is_picture_of_obama": is_obama
+        "is_picture_of_obama": is_obama,
+        "pictures where we observed faces":listForImages
     }
-    return jsonify(result)
-
+    if is_obama:
+       return render_template('response.html',listForImages=listForImages)
+       
+       # send_file(os.path.join(app.config['UPLOAD_FOLDER'], listForImages[0]), mimetype='image/gif')
+    #jsonify(result)
+    else:
+        return jsonify(result)
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5001, debug=True)
