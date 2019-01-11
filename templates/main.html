@@ -6,11 +6,9 @@
          <title>Welcome to Face Recognition</title>
     </head>
     <body>
-    <h1>Welcome to Face Recognition</h1>
-        {% for path in listForImages %}
-        <div class="gallery">  
-        <img src="/static/UPLOAD_FOLDER/{{path}}">
-    </div>
-        {% endfor %}
+            <h1>Welcome to Face Recognition</h1>
+            <form method="POST" enctype="multipart/form-data">
+              <input type="file" name="file">
+              <input type="submit" value="Upload">
+            </form> 
     </body>
-</html>
