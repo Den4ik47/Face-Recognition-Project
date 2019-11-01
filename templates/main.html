@@ -1,14 +1,83 @@
 <html>
     <head>
-         <link rel="stylesheet" href="/static/style.css">
-         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-         <link href="https://fonts.googleapis.com/css?family=ZCOOL+KuaiLe" rel="stylesheet">
-         <title>Welcome to Face Recognition</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">         
+      <link href="https://fonts.googleapis.com/css?family=Oswald:300,400&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="/static/style.css">
     </head>
     <body>
-            <h1>Welcome to Face Recognition</h1>
-            <form method="POST" enctype="multipart/form-data">
-              <input type="file" name="file">
-              <input type="submit" value="Upload">
-            </form> 
-    </body>
+
+        <nav>
+            <div class="nav-wrapper blue-grey darken-4 center-align">
+              <a href="#" class="">Welcome to Face Recognition</a>
+            </div>
+          </nav>
+          <div class="slider">
+              <ul class="slides">
+                <li>
+                  <img src="https://thumbor.forbes.com/thumbor/960x0/https%3A%2F%2Fspecials-images.forbesimg.com%2Fdam%2Fimageserve%2F1126808302%2F960x0.jpg%3Ffit%3Dscale"> <!-- random image -->
+                  <div class="caption center-align">
+                    <h3>AI which open new horyzonts!</h3>
+                  </div>
+                </li>
+                <li>
+                  <img src="https://singularityhub.com/wp-content/uploads/2019/02/Ai-startups-tech-Peter-Rejceck-shutterstock-1290615073-1068x601.jpg"> <!-- random image -->
+                  <div class="caption left-align">
+                    <h3>We can quickly and effectively find all photos in our database, based on your photo!</h3>
+                  </div>
+                </li>
+              </ul>
+            </div>
+                <div id="Instruction">
+                    <div class="card border-secondary" style="max-width: 90rem;">
+                      <div class="card-body">
+                        <h5 class="card-title" style="padding:3%;">Find faces towards name and surname</h5>
+                        <p class="card-text center">Provide Name and Surname for searching in our database!</p>
+                        <div class="row"> 
+                           <form class="col s20" method="POST" enctype="application/x-www-form-urlencoded" action="/question">
+                                  <div class="row"> <div class="input-field col s12">
+                                      <input id="last_name" type="text" class="validate" name="last_name">
+                                      <label for="last_name" >Last Name</label>
+                                      <input  type="submit" value="Search" style="margin-bottom: 3%;">  
+                                    </div>
+                                  </div>
+                          </form> 
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+
+            <div id="Instruction">
+            <div class="card border-secondary" style="max-width: 90rem;">
+              <div class="card-body">
+                <h5 class="card-title" style="padding:3%;">Find faces on photos</h5>
+                <p class="card-text center" style="padding:3%;">Click and choice your photo! If you want to use additional fuction, please rename your first photo towards pattern:"Name Surname".</p>
+                  <form method="POST" enctype="multipart/form-data" action="/">
+                    <input type="file" name="file">
+                    <input  type="submit" value="Upload" style="margin-bottom: 3%;">
+                  <br>
+                  </form> 
+                </div>
+              </div>
+            </div>
+          </div>
+<br>
+        <!--Import jQuery before materialize.js-->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
+
+        <!--Materializecss Slider-->
+        <script>
+            $(document).ready(function () {
+                $('.slider').slider({full_width: true});
+            });
+        </script>    
+        </body>
+        <footer class="page-footer blue-grey darken-4 center-align"> 
+    <div class="footer-copyright">
+        <div class="container">
+        © 2019 Copyright Denys Polyntsev
+        </div>
+      </div>
+    </footer>

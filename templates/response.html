@@ -1,16 +1,32 @@
 <html>
     <head>
          <link rel="stylesheet" href="/static/style.css">
-         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">         
          <link href="https://fonts.googleapis.com/css?family=ZCOOL+KuaiLe" rel="stylesheet">
          <title>Welcome to Face Recognition</title>
     </head>
     <body>
-    <h1>Welcome to Face Recognition</h1>
+            <nav>
+                    <div class="nav-wrapper blue-grey darken-4 center-align">
+                      <a href="/" class="">Welcome to Face Recognition</a>
+                    </div>
+                  </nav>
+        <div class="container">
+                {% if listForImages|length > 0 %}
         {% for path in listForImages %}
-        <div class="gallery">  
+        <div class="gallery"> 
         <img src="/static/UPLOAD_FOLDER/{{path}}">
     </div>
         {% endfor %}
+        {% endif %}   
+    {% if listForImages|length < 1 %}
+          <h2>We have nothing for you =)</h2>
+         {% endif %} 
+</div>
     </body>
+    <footer class="page-footer blue-grey darken-4 center-align"> 
+        <div class="footer-copyright">
+            <div class="container">
+            © 2019 Copyright Denys Polyntsev
+            </div>
 </html>
