@@ -9,7 +9,7 @@ client = MongoClient('localhost', 27017)
 db = client['Users']
 collection = db['Data']
 
-UPLOAD_FOLDER = '/home/deni/Documents/Diploma/static/UPLOAD_FOLDER'
+UPLOAD_FOLDER = '/home/osboxes/Face-Recognition-Project/static/UPLOAD_FOLDER'
 TEMPLATE='/home/deni/Documents/Diploma/templates'
 app = Flask(__name__,template_folder='templates')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -26,6 +26,7 @@ def find():
        if request.form['last_name'] is not '':           
            for x in collection.find():
                  if request.form['last_name'] in x["Name and Surname"]:
+                   if x['Images'] not in listForImages:
                      listForImages.append(x['Images'])
                      print(x['Images'])
            return render_template('response.html',listForImages=listForImages)
@@ -88,7 +89,7 @@ def DetectFacesinImage(file_stream):
                      if res:
                          print("Already exist")
                      else:
-                         if ComparingFaces(pureList,unknown_face_encodings[unknown])[0]:
+                         if ComparingFaces(pureList,unknown_face_encodings[unknown])[0]:                   
                             record=collection.find_one({"value":values[faces]})
                             print(record['Images'][0])
                             collection.insert({"value":str(unknown_face_encodings[unknown]),"Name and Surname":record["Name and Surname"],"Images":file_stream.filename})
@@ -105,10 +106,9 @@ def DetectFacesinImage(file_stream):
                     print(listForImages)
                     faceExist = True
                     face_found = True   
-      else:
-        for unknown in range(len(unknown_face_encodings)):                 
-            collection.insert({"value":str(unknown_face_encodings[unknown]),"Name and Surname":os.path.splitext(file_stream.filename)[0],"Images":file_stream.filename})                
-                                  
+       
+      if len(listForImages) is 0:
+          collection.insert({"value":str(unknown_face_encodings[unknown]),"Name and Surname":os.path.splitext(file_stream.filename)[0],"Images":file_stream.filename})                            
     else:
         for unknown in range(len(unknown_face_encodings)):                 
             collection.insert({"value":str(unknown_face_encodings[unknown]),"Name and Surname":os.path.splitext(file_stream.filename)[0],"Images":file_stream.filename})                
